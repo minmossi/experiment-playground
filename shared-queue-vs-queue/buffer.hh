@@ -6,8 +6,8 @@
 
 class PacketDescriptor{
 public:
-    int src_port;
-    int dest_port;
+    int src_sock;
+    int dst_sock;
     size_t packet_size;
     void *packet_addr;
 };
@@ -16,9 +16,9 @@ class Buffer{
 private:
     // Packet Descriptors Method
     void push_packet_desc(PacketDescriptor *packet_desc);
-    void get_packet_desc(int src_port, int dest_port, PacketDescriptor *packet_desc);
-    void reduct_next_packet_size(int src_port, int dest_port, size_t reduct_size);
-    void pop_packet_desc(int src_port, int dest_port);
+    void get_packet_desc(int src_sock, int dst_sock, PacketDescriptor *packet_desc);
+    void reduct_next_packet_size(int src_sock, int dst_sock, size_t reduct_size);
+    void pop_packet_desc(int src_sock, int dst_sock);
 public:
     // Policy
     size_t max_packet_size;
@@ -47,10 +47,10 @@ public:
     void change_max_packet_size(size_t max_packet_size);
 
     // Buffer Methods
-    void push_data(int src_port, int dest_port, void *src_addr, size_t size);
-    void pop_data(int src_port, int dest_port, void *dest_addr, size_t size);
-    size_t get_next_packet_size(int src_port, int dest_port);
-    void pop_packet(int src_port, int dest_port, void *dest_addr);
+    void push_data(int src_sock, int dst_sock, void *src_addr, size_t size);
+    void pop_data(int src_sock, int dst_sock, void *dest_addr, size_t size);
+    size_t get_next_packet_size(int src_sock, int dst_sock);
+    void pop_packet(int src_sock, int dst_sock, void *dest_addr);
 };
 
 #endif
