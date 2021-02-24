@@ -2,8 +2,8 @@
 
 #include <pthread.h>
 
-#include "buffer.hh"
 #include "region.hh"
+#include "ring.hh"
 
 int main(int argc, char *argv[]){
     
