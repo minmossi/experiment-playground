@@ -16,9 +16,9 @@ class Buffer{
 private:
     // Packet Descriptors Method
     void push_packet_desc(PacketDescriptor *packet_desc);
-    void get_packet_desc(int dest_port, PacketDescriptor *packet_desc);
-    void reduct_next_packet_size(int dest_port, size_t reduct_size);
-    void pop_packet_desc(int dest_port);
+    void get_packet_desc(int src_port, int dest_port, PacketDescriptor *packet_desc);
+    void reduct_next_packet_size(int src_port, int dest_port, size_t reduct_size);
+    void pop_packet_desc(int src_port, int dest_port);
 public:
     // Policy
     size_t max_packet_size;
