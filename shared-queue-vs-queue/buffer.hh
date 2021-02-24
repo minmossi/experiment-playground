@@ -6,6 +6,7 @@
 
 class PacketDescriptor{
 public:
+    int port;
     void *packet_addr;
     size_t packet_size;
 };
@@ -14,7 +15,9 @@ class Buffer{
 private:
     // Packet Descriptors Method
     void push_packet_desc(PacketDescriptor *packet_desc);
-    void pop_packet_desc(PacketDescriptor *packet_desc);
+    void get_packet_desc(int port, PacketDescriptor *packet_desc);
+    void alter_packet_desc(int port, PacketDescriptor *packet_desc);
+    void pop_packet_desc();
 public:
     // Policy
     size_t max_packet_size;
@@ -43,8 +46,10 @@ public:
     void change_max_packet_size(size_t max_packet_size);
 
     // Buffer Methods
-    void push_data(void *src_addr, size_t size);
-    void pop_data(void *dest_addr, size_t size);
+    void push_data(int port, void *src_addr, size_t size);
+    void pop_data(int port, void *dest_addr, size_t size);
+    size_t get_next_packet_size(int port);
+    void pop_packet(int port, void *dest_addr);
 };
 
 #endif
