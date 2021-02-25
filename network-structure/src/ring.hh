@@ -18,7 +18,8 @@ class Ring{
     size_t max_packet_size;
 
     // Packet Descriptors
-    std::mutex packet_descs_addr_mutex;
+    uint8_t packet_state;
+    std::mutex packet_descs_ptr_mutex;
     size_t packet_descs_len;
     PacketDescriptor *packet_descs;
     PacketDescriptor *packet_descs_bound;
@@ -26,7 +27,8 @@ class Ring{
     PacketDescriptor *packet_descs_end_ptr;
 
     // Ring
-    std::mutex bytes_addr_mutex;
+    uint8_t ring_state;
+    std::mutex bytes_ptr_mutex;
     size_t bytes_size;
     void *bytes;
     void *bytes_bound;
@@ -50,15 +52,30 @@ public:
     void change_max_packet_size(size_t max_packet_size);
 
     // Ring Methods
-    void push_data(int src_sock, int dst_sock, void *src_addr, size_t size);
-    void pop_data(int src_sock, int dst_sock, void *dest_addr, size_t size);
+    int push_data(int src_sock, int dst_sock, void *src_addr, size_t size);
+    int pop_data(int src_sock, int dst_sock, void *dest_addr, size_t size);
     size_t get_next_packet_size(int src_sock, int dst_sock);
-    void pop_packet(int src_sock, int dst_sock, void *dest_addr);
+    int pop_packet(int src_sock, int dst_sock, void *dest_addr);
 };
 
 // Ring Group Class
 class RingGroup{
+public:
+    // Ring Group
+    Ring ring;
+    Ring *next_ring;
 
+    // Constructor
+    RingGroup();
+
+    // Deconstructor
+    ~RingGroup();
+
+    // Ring Group Method
+    int push_data(int src_sock, int dst_sock, void *src_addr, size_t size);
+    int pop_data(int src_sock, int dst_sock, void *dest_addr, size_t size);
+    size_t get_next_packet_size(int src_sock, int dst_sock);
+    int pop_packet(int src_sock, int dst_sock, void *dest_addr);
 };
 
 #endif
