@@ -83,9 +83,8 @@ int main(int argc, char *argv[]){
         }
         end_time = std::chrono::steady_clock::now();
         total_elapsed_time_sr += chrono::duration_cast<std::chrono::milliseconds>(end_time - begin_time).count();
-        cout << "[Same Region] Time Elapsed: " << chrono::duration_cast<std::chrono::milliseconds>(end_time - begin_time).count() << "ms" << endl;    
     }
-    cout << endl << "Average Time Spent: " << total_elapsed_time_sr / loop_num << "ms" << endl << endl;
+    cout << "[Same Region] Average Time Spent: " << total_elapsed_time_sr / loop_num << "ms" << endl << endl;
 
     // Use Different Region
     double total_elapsed_time_dr = 0;
@@ -112,9 +111,8 @@ int main(int argc, char *argv[]){
         }
         end_time = std::chrono::steady_clock::now();
         total_elapsed_time_dr += chrono::duration_cast<std::chrono::milliseconds>(end_time - begin_time).count();
-        cout << "[Different Region] Time Elapsed: " << chrono::duration_cast<std::chrono::milliseconds>(end_time - begin_time).count() << "ms" << endl;
     }
-    cout << endl << "Average Time Spent: " << total_elapsed_time_dr / loop_num << "ms" << endl << endl;
+    cout << "[Different Region] Average Time Spent: " << total_elapsed_time_dr / loop_num << "ms" << endl << endl;
 
     cout << "Performance Difference(total_elapsed_time_dr / total_elapsed_time_sr): " << (total_elapsed_time_dr / total_elapsed_time_sr) * 100 -100 << "%" << endl;
     
