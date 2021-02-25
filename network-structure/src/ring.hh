@@ -27,7 +27,7 @@ class Ring{
     PacketDescriptor *packet_descs_end_ptr;
 
     // Ring
-    uint8_t ring_state;
+    uint8_t bytes_state;
     std::mutex bytes_ptr_mutex;
     size_t bytes_size;
     void *bytes;
@@ -49,6 +49,8 @@ public:
     ~Ring();
 
     // Policy Methods
+    size_t get_ring_size() const;
+    void reset_ring_size(size_t bytes_size); // Dangerous!
     void change_max_packet_size(size_t max_packet_size);
 
     // Ring Methods
@@ -71,7 +73,10 @@ public:
     // Deconstructor
     ~RingGroup();
 
-    // Ring Group Method
+    // Ring Group Methods
+
+
+    // Ring Method
     int push_data(int src_sock, int dst_sock, void *src_addr, size_t size);
     int pop_data(int src_sock, int dst_sock, void *dest_addr, size_t size);
     size_t get_next_packet_size(int src_sock, int dst_sock);

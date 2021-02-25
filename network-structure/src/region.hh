@@ -6,8 +6,8 @@
 
 class Region{
     // Region
-    uint8_t region_state;
-    std::mutex region_ptr_mutex;
+    uint8_t bytes_state;
+    std::mutex bytes_ptr_mutex;
     size_t bytes_size;
     void *bytes;
     void *bytes_bound;
@@ -40,6 +40,9 @@ public:
     ~RegionGroup();
 
     // Region Group Methods
+    
+
+    // Region Methods
     int push_data(void *src_addr, size_t size);
     int pop_data(void *dest_addr, size_t size);
 };
