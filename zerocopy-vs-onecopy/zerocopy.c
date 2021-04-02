@@ -13,7 +13,6 @@ int main(int argc, char *argv[]){
     unsigned int WRITE_SIZE = atoi(argv[2]);
     unsigned int LOOP = atoi(argv[3]);
     const int PAGE_SIZE = getpagesize();
-    int ret;
 
     // sched, affinity
     // unsigned long mask = 1;
@@ -29,14 +28,14 @@ int main(int argc, char *argv[]){
     //     exit(1);
     // }
 
-    int fd = open("/proc/self/pagemap", O_RDONLY);
-    if (fd < 0){
-        perror("open()");
+    int fd_pagemap = open("/proc/self/pagemap", O_RDONLY);
+    if (fd_pagemap < 0){
+        perror("open(/proc/self/pagemap)");
         exit(1);
     }
     int fd_urandom = open("/dev/urandom", O_RDONLY);
     if (fd_urandom < 0){
-        perror("open()");
+        perror("open(/dev/urandom)");
         exit(1);
     }
     void *src, *dest;
@@ -51,27 +50,28 @@ int main(int argc, char *argv[]){
     uint64_t vfn_src, vfn_dest;
     ssize_t pte_src_readcnt, pte_dest_readcnt;
 
+    ssize_t bytes;
     for(int i = 0; i < LOOP; i++){
-        ret = read(fd_urandom, src, WRITE_SIZE);
-        if(ret != WRITE_SIZE){
-            perror("read()");
+        bytes = read(fd_urandom, src, WRITE_SIZE);
+        if(bytes != WRITE_SIZE){
+            perror("read(/dev/urandom, src)");
             exit(1);
         }
-        ret = read(fd_urandom, dest, WRITE_SIZE);
-        if(ret != WRITE_SIZE){
-            perror("read()");
+        bytes = read(fd_urandom, dest, WRITE_SIZE);
+        if(bytes != WRITE_SIZE){
+            perror("read(/dev/urandom, dest)");
             exit(1);
         }
 
         vfn_src = ((uintptr_t)src / PAGE_SIZE);
-        pte_src_readcnt = pread(fd, pte_buf, (WRITE_SIZE / PAGE_SIZE + 1) * sizeof(uint64_t), vfn_src * sizeof(uint64_t));
+        pte_src_readcnt = pread(fd_pagemap, pte_buf, (WRITE_SIZE / PAGE_SIZE + 1) * sizeof(uint64_t), vfn_src * sizeof(uint64_t));
         if (pte_src_readcnt != (WRITE_SIZE / PAGE_SIZE + 1) * sizeof(uint64_t)){
             printf("pte_src_readcnt = %ld\n", pte_src_readcnt);
             perror("pread()");
             exit(1);
         }
         vfn_dest = ((uintptr_t)dest / PAGE_SIZE);
-        pte_dest_readcnt = pread(fd, pte_buf, (WRITE_SIZE / PAGE_SIZE + 1) * sizeof(uint64_t), vfn_dest * sizeof(uint64_t));
+        pte_dest_readcnt = pread(fd_pagemap, pte_buf, (WRITE_SIZE / PAGE_SIZE + 1) * sizeof(uint64_t), vfn_dest * sizeof(uint64_t));
         if (pte_dest_readcnt != (WRITE_SIZE / PAGE_SIZE + 1) * sizeof(uint64_t)){
             printf("pte_dest_readcnt = %ld\n", pte_dest_readcnt);
             perror("pread()");
@@ -81,6 +81,8 @@ int main(int argc, char *argv[]){
         memcpy(dest, src, WRITE_SIZE);
     }
 
+    close(fd_pagemap);
+    close(fd_urandom);
     free(src);
     free(dest);
     return 0;

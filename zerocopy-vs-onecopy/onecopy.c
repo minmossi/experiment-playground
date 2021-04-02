@@ -12,7 +12,6 @@ int main(int argc, char *argv[]){
     unsigned int ARRAY_SIZE = atoi(argv[1]);
     unsigned int WRITE_SIZE = atoi(argv[2]);
     unsigned int LOOP = atoi(argv[3]);
-    int ret;
 
     // sched, affinity
     // unsigned long mask = 1;
@@ -28,14 +27,9 @@ int main(int argc, char *argv[]){
     //     exit(1);
     // }
 
-    int fd = open("/proc/self/pagemap", O_RDONLY);
-    if (fd < 0){
-        perror("open()");
-        exit(1);
-    }
     int fd_urandom = open("/dev/urandom", O_RDONLY);
     if (fd_urandom < 0){
-        perror("open()");
+        perror("open(/dev/urandom)");
         exit(1);
     }
     void *src, *buf, *dest;
@@ -44,15 +38,16 @@ int main(int argc, char *argv[]){
     buf = malloc(ARRAY_SIZE);
     dest = malloc(ARRAY_SIZE);
 
-    for(int i = 0; i < LOOP; i++){  
-        ret = read(fd_urandom, src, WRITE_SIZE);
-        if(ret != WRITE_SIZE){
-            perror("read()");
+    ssize_t bytes;
+    for(int i = 0; i < LOOP; i++){
+        bytes = read(fd_urandom, src, WRITE_SIZE);
+        if(bytes != WRITE_SIZE){
+            perror("read(/dev/urandom, src)");
             exit(1);
         }
-        ret = read(fd_urandom, dest, WRITE_SIZE);
-        if(ret != WRITE_SIZE){
-            perror("read()");
+        bytes = read(fd_urandom, dest, WRITE_SIZE);
+        if(bytes != WRITE_SIZE){
+            perror("read(/dev/urandom, dest)");
             exit(1);
         }
 
@@ -60,6 +55,7 @@ int main(int argc, char *argv[]){
         memcpy(dest, buf, WRITE_SIZE);
     }
 
+    close(fd_urandom);
     free(src);
     free(buf);
     free(dest);
